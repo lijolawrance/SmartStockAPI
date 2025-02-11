@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Define the virtual environment directory name
+VENV_DIR=".venv"
+
+# Check if pyenv is installed
+if ! command -v pyenv &> /dev/null
+then
+    echo "❌ pyenv is not installed. Please install pyenv first."
+    exit 1
+fi
+
+# Check if venv already exists
+if [ ! -d "$VENV_DIR" ]; then
+    echo "🛠️ Creating a new virtual environment using pyenv..."
+    
+    # Ensure Python version is set (Change 3.10.8 to your preferred version)
+    PYTHON_VERSION="3.12.8"
+    pyenv install -s $PYTHON_VERSION  # Ensure the version is installed
+    pyenv virtualenv $PYTHON_VERSION SmartStockAPI-venv  # Create virtualenv
+    pyenv local SmartStockAPI-venv  # Set local virtual environment
+
+    echo "✅ Virtual environment created!"
+else
+    echo "🔄 Virtual environment already exists. Activating..."
+fi
+
+# Activate the virtual environment
+source $(pyenv prefix)/bin/activate
+
+echo "✅ Virtual environment activated!"
+
+# Ensure pip is up to date
+pip install --upgrade pip
+
+# Install dependencies from requirements.txt every time
+if [ -f "requirements.txt" ]; then
+    echo "📦 Installing/updating dependencies from requirements.txt..."
+    pip install -r requirements.txt
+else
+    echo "⚠️ requirements.txt not found. Skipping installation."
+fi
+
+echo "🚀 Setup complete! Your virtual environment is ready."
