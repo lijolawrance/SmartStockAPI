@@ -1,4 +1,4 @@
-name: Lint and Format Code (Warnings Only)
+name: Lint and Format Code
 
 on: [push, pull_request]
 
@@ -33,20 +33,20 @@ jobs:
         pip install -r requirements.txt
         pip install pylint black pre-commit
 
-    - name: 🎨 Auto-Format Code with Black (Warnings Only)
+    - name: 🎨 Auto-Format Code with Black and Commit
       run: |
         black .
-        git diff --exit-code || echo "⚠️ Code formatted, but continuing."
-
-    - name: 🚀 Auto-Commit Formatted Code (No Failure)
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add .
-        git commit -m "🔧 Auto-format code with Black" || echo "⚠️ No changes to commit, continuing."
-        git push origin ${{ github.ref }} || echo "⚠️ No changes to push, continuing."
+        if ! git diff --quiet; then
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "🔧 Auto-format code with Black"
+          git push origin ${{ github.ref }}
+        else
+          echo "✅ No formatting changes needed."
+        fi
 
     - name: 🔎 Run Pylint (Warnings Only)
-      continue-on-error: true  # ✅ This prevents the job from failing
+      continue-on-error: true  # ✅ Pylint warnings won't fail the workflow
       run: |
         pylint --ignore=venv,migrations $(git ls-files '*.py') || echo "⚠️ Pylint warnings detected, but continuing."
