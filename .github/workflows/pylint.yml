@@ -7,31 +7,28 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12.8"]
+        python-version: ["3.12"]
     steps:
     - name: 🛎️ Checkout Code
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}  # Allows auto-commit
 
-    - name: 📥 Install Dependencies (pyenv, Python)
-      run: |
-        sudo apt update
-        sudo apt install -y build-essential libssl-dev zlib1g-dev \
-                            libbz2-dev libreadline-dev libsqlite3-dev curl \
-                            libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-        curl https://pyenv.run | bash
-        echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
-        echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
-        echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
-        source ~/.bashrc
-        pyenv install ${{ matrix.python-version }} -s
-        pyenv global ${{ matrix.python-version }}
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
 
-    - name: 🔹 Activate Virtual Environment & Install Dependencies
+    - name: 💾 Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: 📦 Install Dependencies
       run: |
-        chmod +x activate
-        source activate
         pip install --upgrade pip
         pip install -r requirements.txt
         pip install pylint black pre-commit
