@@ -1,12 +1,14 @@
 import requests
 import os
 from dotenv import load_dotenv
+import datetime
 
 # Load environment variables
 load_dotenv()
 
 API_KEY = os.getenv("FMP_CLOUD_API_KEY")
 API_URL = "https://financialmodelingprep.com/api/v3/quote"
+
 
 def fetch_stock_price(symbol: str):
     """Fetch full stock data from FMP Cloud API"""
@@ -27,7 +29,17 @@ def fetch_stock_price(symbol: str):
     if not data or not isinstance(data, list) or "symbol" not in data[0]:
         return None  # Handle missing data
 
-    stock = data[0]  # Extract first result
+    stock = data[0]
+
+    # ✅ Convert timestamp correctly from milliseconds to seconds
+    raw_timestamp = stock.get("timestamp")  # Comes in milliseconds
+    if raw_timestamp:
+        stock_timestamp = datetime.datetime.utcfromtimestamp(raw_timestamp)  # ✅ FIX: No need to divide by 1000
+    else:
+        stock_timestamp = datetime.datetime.utcnow()  # Use current timestamp if missing
+
+    print(f"✅ Converted timestamp: {stock_timestamp}")  # Debugging print
+
     return {
         "symbol": stock.get("symbol"),
         "name": stock.get("name"),
@@ -50,5 +62,5 @@ def fetch_stock_price(symbol: str):
         "pe": stock.get("pe"),
         "earnings_announcement": stock.get("earningsAnnouncement"),
         "shares_outstanding": stock.get("sharesOutstanding"),
-        "timestamp": stock.get("timestamp")
+        "timestamp": stock_timestamp  # ✅ Now correctly converted
     }

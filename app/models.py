@@ -1,11 +1,14 @@
 from sqlalchemy import Column, String, Float, BigInteger, DateTime
-from app.database import Base
+from sqlalchemy.ext.declarative import declarative_base
 import datetime
+
+Base = declarative_base()
 
 class Stock(Base):
     __tablename__ = "stocks"
 
-    symbol = Column(String, primary_key=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)  # Unique ID for each record
+    symbol = Column(String, nullable=False, index=True)  # Stock ticker symbol (e.g., AAPL, TSLA)
     name = Column(String)
     price = Column(Float)
     changes_percentage = Column(Float)
@@ -26,4 +29,4 @@ class Stock(Base):
     pe = Column(Float)
     earnings_announcement = Column(String)
     shares_outstanding = Column(BigInteger)
-    timestamp = Column(BigInteger, default=datetime.datetime.utcnow)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow, index=True)  # Auto-set timestamp

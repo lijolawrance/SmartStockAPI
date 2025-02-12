@@ -8,4 +8,8 @@ requests
 passlib[bcrypt]
 python-jose[cryptography]
 python-dotenv
+celery 
+redis
+celery[redis]
+django-celery-beat
 

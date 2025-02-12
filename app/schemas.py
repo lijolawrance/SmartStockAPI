@@ -1,6 +1,8 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class StockResponse(BaseModel):
+    id: int  # Added ID field
     symbol: str
     name: str
     price: float
@@ -22,7 +24,7 @@ class StockResponse(BaseModel):
     pe: float
     earnings_announcement: str
     shares_outstanding: int
-    timestamp: int
+    timestamp: datetime  # Changed to datetime for correct formatting
 
     class Config:
-        orm_mode = True
+        orm_mode = True  # Allows Pydantic to work with SQLAlchemy models
