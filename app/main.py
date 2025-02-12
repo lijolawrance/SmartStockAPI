@@ -12,7 +12,9 @@ app = FastAPI()
 
 
 @app.get("/stocks/{symbol}", response_model=StockResponse)
-def fetch_and_store_stock(symbol: str, db: Session = Depends(get_db)):  # ✅ Use get_db instead of database.get_db
+def fetch_and_store_stock(
+    symbol: str, db: Session = Depends(get_db)
+):  # ✅ Use get_db instead of database.get_db
     """Fetch full stock data from API, store it as a new record, and return the latest"""
     stock_data = services.fetch_stock_price(symbol)
 
@@ -30,9 +32,11 @@ def fetch_and_store_stock(symbol: str, db: Session = Depends(get_db)):  # ✅ Us
 
     return latest_stock
 
-    
+
 @app.get("/stocks/{symbol}/history", response_model=list[StockResponse])
-def get_stock_history(symbol: str, limit: int = 10, db: Session = Depends(database.get_db)):
+def get_stock_history(
+    symbol: str, limit: int = 10, db: Session = Depends(database.get_db)
+):
     """Fetch the historical stock data for a given symbol"""
     stock_history = crud.get_stock_history(db, symbol, limit)
 

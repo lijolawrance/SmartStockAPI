@@ -34,7 +34,9 @@ def fetch_stock_price(symbol: str):
     # ✅ Convert timestamp correctly from milliseconds to seconds
     raw_timestamp = stock.get("timestamp")  # Comes in milliseconds
     if raw_timestamp:
-        stock_timestamp = datetime.datetime.utcfromtimestamp(raw_timestamp)  # ✅ FIX: No need to divide by 1000
+        stock_timestamp = datetime.datetime.utcfromtimestamp(
+            raw_timestamp
+        )  # ✅ FIX: No need to divide by 1000
     else:
         stock_timestamp = datetime.datetime.utcnow()  # Use current timestamp if missing
 
@@ -62,5 +64,5 @@ def fetch_stock_price(symbol: str):
         "pe": stock.get("pe"),
         "earnings_announcement": stock.get("earningsAnnouncement"),
         "shares_outstanding": stock.get("sharesOutstanding"),
-        "timestamp": stock_timestamp  # ✅ Now correctly converted
+        "timestamp": stock_timestamp,  # ✅ Now correctly converted
     }

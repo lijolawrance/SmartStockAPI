@@ -7,7 +7,7 @@ from celery.schedules import crontab
 celery = Celery(
     "tasks",
     broker="redis://localhost:6379/0",  # Redis URL
-    backend="redis://localhost:6379/0"  # Redis used as result backend
+    backend="redis://localhost:6379/0",  # Redis used as result backend
 )
 
 celery.conf.update(
