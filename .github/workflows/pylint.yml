@@ -21,19 +21,12 @@ jobs:
                             libbz2-dev libreadline-dev libsqlite3-dev curl \
                             libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
         curl https://pyenv.run | bash
-        export PATH="$HOME/.pyenv/bin:$PATH"
-        eval "$(pyenv init --path)"
-        eval "$(pyenv virtualenv-init -)"
+        echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
+        echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
+        echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+        source ~/.bashrc
         pyenv install ${{ matrix.python-version }} -s
         pyenv global ${{ matrix.python-version }}
-
-    - name: 💾 Cache dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
 
     - name: 🔹 Activate Virtual Environment & Install Dependencies
       run: |
@@ -41,7 +34,7 @@ jobs:
         source activate
         pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pylint black
+        pip install pylint black pre-commit
 
     - name: 🎨 Auto-Format Code with Black
       run: |
